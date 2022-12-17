@@ -1,0 +1,76 @@
+#!/bin/sh
+
+set -e
+
+IPFS_PATH="${IPFS_PATH:-${HOME}/.ipfs}"
+
+main() {
+    check_ipfs_repo
+    check_cmd ipfs
+
+    CURRENT_REPO_VERSION=$(get_current_repo_version)
+    LATEST_REPO_VERSION=$(get_latest_repo_version)
+
+    if [ $CURRENT_REPO_VERSION -eq $LATEST_REPO_VERSION ]; then
+        die no migrations to run
+    fi
+
+    info current repo version is $CURRENT_REPO_VERSION, target is $LATEST_REPO_VERSION
+    LAST_ITER=$(expr $LATEST_REPO_VERSION - 1 || echo $LATEST_REPO_VERSION)
+
+    for current in $(seq $CURRENT_REPO_VERSION $LAST_ITER); do
+        migrate_one_version
+    done
+}
+
+migrate_one_version() {
+    next=$(expr $current + 1 || die invalid ipfs repo version: $current)
+
+    _cmd="fs-repo-${current}-to-${next}"
+    info migrating from $current to $next
+
+    if [ "$DRY_RUN" != 1 ]; then
+        check_cmd $_cmd
+        $_cmd
+    fi
+}
+
+get_latest_repo_version() {
+    case $LATEST_REPO_VERSION in
+        "")
+            ipfs repo version -q | grep -oP '\d+'
+            ;;
+        *[!0-9]*)
+            die invalid latest repo version: $LATEST_REPO_VERSION
+            ;;
+        *)
+            echo $LATEST_REPO_VERSION
+            ;;
+    esac
+}
+
+get_current_repo_version() {
+    cat "${IPFS_PATH}/version" 2>/dev/null \
+        || die no version metadata in ipfs repo
+}
+
+die() {
+    echo error: $@ >&2
+    exit 1
+}
+
+info() {
+    echo info: $@
+}
+
+check_cmd() {
+    command -v $1 >/dev/null 2>/dev/null \
+        || die $1 is not present in '$PATH'
+}
+
+check_ipfs_repo() {
+    stat "$IPFS_PATH" >/dev/null 2>/dev/null \
+        || die no migrations to run
+}
+
+main
