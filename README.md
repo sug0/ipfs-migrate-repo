@@ -9,12 +9,13 @@ Simpyly run `ipfs-migrate-repo`. The supported environment variables are:
 
 ```
 ===========================================================================
-LATEST_REPO_VERSION | The last version to perform the migrate to. If empty,
-                    | this is inferred automatically through kubo.
+LATEST_REPO_VERSION | The last version to perform the migration to. If
+                    | empty, this variable is inferred automatically through
+                    | kubo.
 ===========================================================================
 IPFS_PATH           | The path to an IPFS repository.
 ===========================================================================
-DRY_RUN             | When set to 1, simply prints the migration that would
-                    | be run.
+DRY_RUN             | When set to 1, simply prints the migrations that
+                    | would be run on the selected repository.
 ===========================================================================
 ```
