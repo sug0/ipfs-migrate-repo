@@ -31,7 +31,7 @@ migrate_one_version() {
 
     if [ "$DRY_RUN" != 1 ]; then
         check_cmd $_cmd
-        $_cmd
+        $_cmd -path "$IPFS_PATH"
     fi
 }
 
