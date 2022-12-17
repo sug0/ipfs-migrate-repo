@@ -5,7 +5,7 @@ supported by [kubo](https://github.com/ipfs/kubo).
 
 ## Usage
 
-Simpyly run `ipfs-migrate-repo`. The supported environment variables are:
+Simply run `ipfs-migrate-repo`. The supported environment variables are:
 
 ```
 ===========================================================================
